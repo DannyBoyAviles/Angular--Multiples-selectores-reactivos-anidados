@@ -29,8 +29,8 @@ export class SelectorPageComponent implements OnInit {
 
     this.regiones = this.paisService.regiones;
 
-    //cuando cambie la region
-    // this.miFormulario.get('region')?.valueChanges
+    //cuando cambie la region (normal)
+    // this.miFormulario.get('region')?.valueChanges //escucha los cambios del campo 
     // .subscribe( region =>{
     //   console.log(region);
 
@@ -43,17 +43,17 @@ export class SelectorPageComponent implements OnInit {
       
     // })
 
+    //cuando cambie la region (con metodo pipe, switcs map y tap)
     this.miFormulario.get('region')?.valueChanges
-    .pipe(
-      tap( ( _ ) => {
+    .pipe( // ayuda a manipular el valor obtenido y agragra efectos secundarios y otros metodos de RXJS ( ¡¡¡ INVESTIGAR A FONSO !!!)
+      tap( ( _ ) => { //TAP: afecto secundario disparado dentro del pipe. // ( _ ) indica que no importa loe que se regrese
         this.miFormulario.get('pais')?.reset('');
       }),
-      switchMap(region => this.paisService.getPaisesPorRegion( region ))
+      switchMap(region => this.paisService.getPaisesPorRegion( region )) //obtener el valor producot del observable
     )
     .subscribe( paises => {
       console.log(paises)
-      this.paises = paises   
-      
+      this.paises = paises
     })
 
   }
@@ -63,3 +63,7 @@ export class SelectorPageComponent implements OnInit {
     
   }
 }
+
+/*SWITHCMAP
+EN ESRTE CASO hace el cambio (swicth) del valor del selector por el observable  del servicio solicitado
+*/
