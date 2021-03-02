@@ -24,6 +24,9 @@ export class SelectorPageComponent implements OnInit {
   paises : PaisSmall[] = [];
   fronteras : string[] = [];
 
+  //UI
+  cargando:boolean = false;
+
   constructor(private fb: FormBuilder,
               private paisService: PaisesService ) { }
 
@@ -50,12 +53,15 @@ export class SelectorPageComponent implements OnInit {
     .pipe( // ayuda a manipular el valor obtenido y agragra efectos secundarios y otros metodos de RXJS ( ¡¡¡ INVESTIGAR A FONSO !!!)
       tap( ( _ ) => { //TAP: afecto secundario disparado dentro del pipe. // ( _ ) indica que no importa loe que se regrese
         this.miFormulario.get('pais')?.reset('');
+        this.cargando = true;
+        // this.miFormulario.get('frontera')?.disable();
       }),
       switchMap(region => this.paisService.getPaisesPorRegion( region )) //obtener el valor producot del observable
     )
     .subscribe( paises => {
       console.log(paises)
-      this.paises = paises
+      this.paises = paises;
+      this.cargando = false;
     })
 
     //cuando cambia el pais
@@ -64,12 +70,15 @@ export class SelectorPageComponent implements OnInit {
       tap( ( ) => { //ambas formas de mandar un oparametro en blanco
         this.fronteras = [];
         this.miFormulario.get('frontera')?.reset('');
+        this.cargando = true;
+        // this.miFormulario.get('frontera')?.enable();
       }),
       switchMap(codigo => this.paisService.getPaisesPorCodigo( codigo )) 
     )
     .subscribe( pais => {
       console.log(pais)
       this.fronteras = pais?.borders || [];
+      this.cargando = false;
     })
 
   }
