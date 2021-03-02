@@ -14,13 +14,15 @@ import { PaisSmall } from '../../interfaces/paises.interface';
 export class SelectorPageComponent implements OnInit {
 
   miFormulario: FormGroup = this.fb.group({
-    region: ['', Validators.required],
-    pais: ['', Validators.required]
+    region    : ['', Validators.required],
+    pais      : ['', Validators.required],
+    frontera  : ['', Validators.required]
   })
 
   // llenar selectores
   regiones: string[] = [];
   paises : PaisSmall[] = [];
+  fronteras : string[] = [];
 
   constructor(private fb: FormBuilder,
               private paisService: PaisesService ) { }
@@ -54,6 +56,20 @@ export class SelectorPageComponent implements OnInit {
     .subscribe( paises => {
       console.log(paises)
       this.paises = paises
+    })
+
+    //cuando cambia el pais
+    this.miFormulario.get('pais')?.valueChanges
+    .pipe( 
+      tap( ( ) => { //ambas formas de mandar un oparametro en blanco
+        this.fronteras = [];
+        this.miFormulario.get('frontera')?.reset('');
+      }),
+      switchMap(codigo => this.paisService.getPaisesPorCodigo( codigo )) 
+    )
+    .subscribe( pais => {
+      console.log(pais)
+      this.fronteras = pais?.borders || [];
     })
 
   }
